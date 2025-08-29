@@ -1,0 +1,14 @@
+name: example
+description: tr_ton_wallet_service example
+publish_to: 'none'
+version: 1.0.0
+
+environment:
+  sdk: '>=3.9.0 <4.0.0'
+
+# Use shared dependency resolution
+resolution: workspace
+
+dependencies:
+  flutter:
+    sdk: flutter

@@ -1,0 +1,29 @@
+name: tr_ton_wallet_service
+description: Tron Energy Wallet - TON blockchain library
+version: 1.0.0
+publish_to: 'none'
+
+environment:
+  sdk: '>=3.9.0 <4.0.0'
+
+workspace:
+  - example
+
+# Add regular dependencies here.
+dependencies:
+  blockchain_utils: ^5.2.0
+  http: ^1.4.0
+  meta: ^1.16.0
+  ton_dart: ^2.0.0
+  tr_logger:
+    git:
+      url: git@github.com:Trenergy-wallet/tr_logger.git
+      ref: v1.0.0
+
+dev_dependencies:
+  very_good_analysis: ^9.0.0
+
+topics:
+  - wallet
+  - blockchain
+  - ton
