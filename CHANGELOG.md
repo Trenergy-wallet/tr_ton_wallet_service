@@ -1,3 +1,7 @@
+## 1.0.2
+
+* defaultRequestTimeout 10 sec
+
 ## 1.0.1
 
 * Https dependency migration
