@@ -15,7 +15,7 @@ class TonHTTPProvider implements TonServiceProvider {
     http.Client? client,
     String? tonApiKey,
     String? authToken,
-    this.defaultRequestTimeout = const Duration(seconds: 30),
+    this.defaultRequestTimeout = const Duration(seconds: 10),
     TRLogger? logger,
   }) : client = client ?? http.Client(),
        logger = logger ?? InAppLogger(),
