@@ -108,7 +108,10 @@ class TonWalletService {
     String contractAddress,
   ) async {
     if (contractAddress.isEmpty) {
-      throw const ArgumentException('Provide a non-empty contractAddress');
+      throw ArgumentException.invalidOperationArguments(
+        'fetchJettonMetadata',
+        reason: 'contractAddress is empty',
+      );
     }
 
     // We expect:
@@ -189,8 +192,9 @@ class TonWalletService {
     String contractJettonAddress,
   ) async {
     if (contractJettonAddress.isEmpty) {
-      throw const ArgumentException(
-        'Provide a non-empty contractJettonAddress',
+      throw ArgumentException.invalidOperationArguments(
+        'fetchJettonWalletAddress',
+        reason: 'contractJettonAddress is empty',
       );
     }
 
@@ -202,9 +206,11 @@ class TonWalletService {
       ),
     );
     if (res.jettonWallets.isEmpty) {
-      throw ArgumentException(
-        'No jetton wallets found for ${tonWallet.address} on jetton '
-        'contract $contractJettonAddress',
+      throw ArgumentException.invalidOperationArguments(
+        'fetchJettonWalletAddress',
+        reason:
+            'No jetton wallets found for ${tonWallet.address} on jetton '
+            'contract $contractJettonAddress',
       );
     }
     return TonAddress(
