@@ -1,3 +1,7 @@
+## 1.1.0
+
+* Dependencies updated
+
 ## 1.0.2
 
 * defaultRequestTimeout 10 sec
