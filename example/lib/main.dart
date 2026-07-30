@@ -121,19 +121,18 @@ class _SomeScreenState extends State<SomeScreen> {
   @override
   void initState() {
     super.initState();
-    rpc = TonProvider(
-      isTestnet
-          ? TonHTTPProvider(
-              tonApiUrl: 'https://testnet.tonapi.io',
-              tonCenterUrl: 'https://testnet.toncenter.com',
-              tonApiKey: _testApiKey,
-            )
-          : TonHTTPProvider(
-              tonApiUrl: 'https://tonapi.io',
-              tonCenterUrl: 'https://toncenter.com',
-              authToken: _mainNetApiKey,
-            ),
-    );
+    final service = isTestnet
+        ? TonHTTPProvider(
+            tonApiUrl: 'https://testnet.tonapi.io',
+            tonCenterUrl: 'https://testnet.toncenter.com',
+            tonApiKey: _testApiKey,
+          )
+        : TonHTTPProvider(
+            tonApiUrl: 'https://tonapi.io',
+            tonCenterUrl: 'https://toncenter.com',
+            authToken: _mainNetApiKey,
+          );
+    rpc = TonProvider(service, service.api);
     _initWallets();
   }
 
@@ -300,7 +299,7 @@ class _SomeScreenState extends State<SomeScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text('mnem1: $mnemonics1'),
-                Text('address1: ${wallet1.address.toFriendlyAddress()}'),
+                Text('address1: ${wallet1.address.toFriendly()}'),
                 Text('Balance: ${balance1.prettyBalance}'),
                 Text(
                   'JettonBalance: ${jettonBalance1.prettyBalance} ${wallet1serviceJetton?.jettonOnChainMetadata.symbol ?? ''}',
@@ -422,7 +421,7 @@ class _SomeScreenState extends State<SomeScreen> {
                 //     child: const Text('Mint')),
                 const Divider(),
                 Text('mnem2: $mnemonics2'),
-                Text('address2: ${wallet2.address.toFriendlyAddress()}'),
+                Text('address2: ${wallet2.address.toFriendly()}'),
                 Text('Balance: ${balance2.prettyBalance}'),
                 Text(
                   'JettonBalance: ${jettonBalance2.prettyBalance} ${wallet2serviceJetton?.jettonOnChainMetadata.symbol ?? ''}',

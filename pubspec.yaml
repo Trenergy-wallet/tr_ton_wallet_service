@@ -11,7 +11,7 @@ workspace:
 
 # Add regular dependencies here.
 dependencies:
-  blockchain_utils: ^6.0.0
+  blockchain_utils: ^7.1.0
   http: ^1.6.0
   meta: ^1.17.0
   ton_dart: ^2.2.0

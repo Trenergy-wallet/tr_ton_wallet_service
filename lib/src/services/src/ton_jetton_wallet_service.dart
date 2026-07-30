@@ -216,7 +216,7 @@ class TonJettonWalletService {
       ),
       rpc: tonWalletService.rpc,
       operation: JettonWalletTransfer(
-        amount: TonHelper.toNano(amount),
+        amount: TonHelper.toNanoGrams(amount),
         // Important! Send only to the main TON wallet address, otherwise
         // the recipient's token wallet contract will not be activated.
         destination: recipient, // jettonAddressForRecipient
@@ -224,10 +224,10 @@ class TonJettonWalletService {
         forwardPayload: _buildForwardCellWithMessage(message),
       ),
       amount: tonAmount == null
-          ? tonWalletService.tonWallet.chain == TonChainId.mainnet
-                ? TonHelper.toNano('0.05')
-                : TonHelper.toNano('0.3')
-          : TonHelper.toNano(tonAmount),
+          ? tonWalletService.tonWallet.chainId == TonChainId.mainnet
+                ? TonHelper.toNanoGrams('0.05')
+                : TonHelper.toNanoGrams('0.3')
+          : TonHelper.toNanoGrams(tonAmount),
       action: sendToBlockchain
           ? TonTransactionAction.broadcast
           : TonTransactionAction.boc,

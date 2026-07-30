@@ -5,7 +5,7 @@ import 'package:tr_logger/tr_logger.dart';
 
 /// HTTPProvider class implements TonServiceProvider interface
 /// for handling HTTP requests to TonApi and TonCenter.
-class TonHTTPProvider implements TonServiceProvider {
+class TonHTTPProvider with TonServiceProvider {
   /// HTTPProvider class implements TonServiceProvider interface
   /// for handling HTTP requests to TonApi and TonCenter.
   TonHTTPProvider({
@@ -48,13 +48,13 @@ class TonHTTPProvider implements TonServiceProvider {
   final TonApiType api;
 
   @override
-  Future<TonServiceResponse<T>> doRequest<T>(
+  Future<TonServiceResponse> doRequest(
     TonRequestDetails params, {
     Duration? timeout,
   }) async {
-    final uri = params.apiType == TonApiType.tonApi
-        ? params.toUri(tonApiUrl!)
-        : params.toUri(tonCenterUrl!);
+    final uri = params.api == TonApiType.tonApi
+        ? params.encodeUrl(tonApiUrl!)
+        : params.encodeUrl(tonCenterUrl!);
     final headers = <String, String>{
       'Accept': 'application/json',
       if (_tonApiKey != null) 'api_key': _tonApiKey,
@@ -62,15 +62,18 @@ class TonHTTPProvider implements TonServiceProvider {
       'Content-Type': 'application/json',
       ...params.headers,
     };
-    if (params.type.isPostRequest) {
+    if (params.requestMethod.isPost) {
       final response = await client
-          .post(uri, headers: headers, body: params.body())
+          .post(uri, headers: headers, body: params.encodeBody())
           .timeout(timeout ?? defaultRequestTimeout);
       logger.logInfoMessage(
         _name,
         'POST: request: ${response.request}, response: ${response.body}',
       );
-      return params.toResponse(response.bodyBytes, response.statusCode);
+      return params.toResponse(
+        response.bodyBytes,
+        statusCode: response.statusCode,
+      );
     }
     final response = await client
         .get(uri, headers: headers)
@@ -79,6 +82,9 @@ class TonHTTPProvider implements TonServiceProvider {
       _name,
       'GET: request: ${response.request}, response: ${response.body}',
     );
-    return params.toResponse(response.bodyBytes, response.statusCode);
+    return params.toResponse(
+      response.bodyBytes,
+      statusCode: response.statusCode,
+    );
   }
 }

@@ -13,8 +13,19 @@ class TonWalletService {
     required TonProvider rpc,
     TRLogger? logger,
   }) {
+    // `workchain` defaults to TonWorkChain.basechain for both networks.
+    //
+    // Up to ton_dart 2.2.0 the old `TonChainId` conflated network and
+    // workchain, and `TonChainId.testnet` carried workchain -1 - meaning
+    // testnet wallets were derived in the masterchain, which is reserved for
+    // validators and system contracts. 2.3.0 split the two concepts, so
+    // `tonChain` now only selects the network global id (-239 / -3) and the
+    // `testOnly` flag of the friendly address.
+    //
+    // Consequence: testnet addresses changed. The raw address of a key is now
+    // identical on both networks, as it should be on TON.
     final wallet = WalletV4.create(
-      chain: tonChain,
+      chainId: tonChain,
       publicKey: publicKey.toBytes(),
     );
     return TonWalletService._(tonChain, wallet, rpc, logger);
@@ -27,7 +38,9 @@ class TonWalletService {
     required TonProvider rpc,
     TRLogger? logger,
   }) {
-    final wallet = WalletV4(address: TonAddress(address), chain: tonChain);
+    // `workchain` is omitted deliberately: WalletV4 derives it from the
+    // address itself.
+    final wallet = WalletV4(address: TonAddress(address), chainId: tonChain);
     return TonWalletService._(tonChain, wallet, rpc, logger);
   }
 
@@ -75,7 +88,7 @@ class TonWalletService {
                 body: message != null
                     ? TonHelper.buildMessageBody(message)
                     : null,
-                amount: TonHelper.toNano(amount),
+                amount: TonHelper.toNanoGrams(amount),
               ),
             ),
           ],
@@ -213,9 +226,7 @@ class TonWalletService {
             'contract $contractJettonAddress',
       );
     }
-    return TonAddress(
-      res.jettonWallets.first.address.toFriendlyAddress(),
-    );
+    return res.jettonWallets.first.address.toFriendly();
   }
 
   /// Returns TonAddressStateType or throws an Exception
