@@ -3,6 +3,7 @@ import 'package:ton_dart/ton_dart.dart';
 import 'package:tr_logger/tr_logger.dart';
 import 'package:tr_ton_wallet_service/src/models/models.dart';
 import 'package:tr_ton_wallet_service/src/services/services.dart';
+import 'package:tr_ton_wallet_service/src/utils/utils.dart';
 
 /// Ton jetton wallet service
 class TonJettonWalletService {
@@ -53,7 +54,7 @@ class TonJettonWalletService {
 
     try {
       if (jettonWalletAddress != null) {
-        jettonAddress = TonAddress(jettonWalletAddress);
+        jettonAddress = TonAddressParser.parse(jettonWalletAddress);
       }
       jettonAddress ??= await _fetchJettonAddress(
         jettonMasterContractAddress: jettonMasterContractAddress,

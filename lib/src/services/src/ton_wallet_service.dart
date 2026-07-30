@@ -3,6 +3,7 @@ import 'package:ton_dart/ton_dart.dart';
 import 'package:tr_logger/tr_logger.dart';
 import 'package:tr_ton_wallet_service/src/models/models.dart';
 import 'package:tr_ton_wallet_service/src/services/services.dart';
+import 'package:tr_ton_wallet_service/src/utils/utils.dart';
 
 /// Main service for TON transactions
 class TonWalletService {
@@ -40,7 +41,10 @@ class TonWalletService {
   }) {
     // `workchain` is omitted deliberately: WalletV4 derives it from the
     // address itself.
-    final wallet = WalletV4(address: TonAddress(address), chainId: tonChain);
+    final wallet = WalletV4(
+      address: TonAddressParser.parse(address),
+      chainId: tonChain,
+    );
     return TonWalletService._(tonChain, wallet, rpc, logger);
   }
 
@@ -84,7 +88,7 @@ class TonWalletService {
           messages: [
             OutActionSendMsg(
               outMessage: TonHelper.internal(
-                destination: TonAddress(addressTo),
+                destination: TonAddressParser.parse(addressTo),
                 body: message != null
                     ? TonHelper.buildMessageBody(message)
                     : null,
