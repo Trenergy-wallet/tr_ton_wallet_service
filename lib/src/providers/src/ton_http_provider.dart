@@ -5,6 +5,11 @@ import 'package:tr_logger/tr_logger.dart';
 
 /// HTTPProvider class implements TonServiceProvider interface
 /// for handling HTTP requests to TonApi and TonCenter.
+///
+/// Meant to be long-lived: create it once and share it, so that the http client
+/// keeps its connections alive between requests. The auth token is not
+/// stored in the instance - `getAuthToken` is called on every request.
+/// The provider never closes the http client, that is up to its owner.
 class TonHTTPProvider with TonServiceProvider {
   /// HTTPProvider class implements TonServiceProvider interface
   /// for handling HTTP requests to TonApi and TonCenter.
@@ -14,13 +19,13 @@ class TonHTTPProvider with TonServiceProvider {
     this.api = TonApiType.tonApi,
     http.Client? client,
     String? tonApiKey,
-    String? authToken,
+    String? Function()? getAuthToken,
     this.defaultRequestTimeout = const Duration(seconds: 10),
     TRLogger? logger,
   }) : client = client ?? http.Client(),
        logger = logger ?? InAppLogger(),
        _tonApiKey = tonApiKey,
-       _authToken = authToken;
+       _getAuthToken = getAuthToken;
 
   /// API for REST
   final String? tonApiUrl;
@@ -40,7 +45,9 @@ class TonHTTPProvider with TonServiceProvider {
   final TRLogger logger;
 
   final String? _tonApiKey;
-  final String? _authToken;
+
+  /// Current auth token: null or empty - no Authorization header
+  final String? Function()? _getAuthToken;
 
   static const String _name = 'TonHTTPProvider';
 
@@ -55,10 +62,12 @@ class TonHTTPProvider with TonServiceProvider {
     final uri = params.api == TonApiType.tonApi
         ? params.encodeUrl(tonApiUrl!)
         : params.encodeUrl(tonCenterUrl!);
+    final authToken = _getAuthToken?.call();
     final headers = <String, String>{
       'Accept': 'application/json',
       if (_tonApiKey != null) 'api_key': _tonApiKey,
-      if (_authToken != null) 'Authorization': 'Bearer $_authToken',
+      if (authToken != null && authToken.isNotEmpty)
+        'Authorization': 'Bearer $authToken',
       'Content-Type': 'application/json',
       ...params.headers,
     };

@@ -130,7 +130,7 @@ class _SomeScreenState extends State<SomeScreen> {
         : TonHTTPProvider(
             tonApiUrl: 'https://tonapi.io',
             tonCenterUrl: 'https://toncenter.com',
-            authToken: _mainNetApiKey,
+            getAuthToken: () => _mainNetApiKey,
           );
     rpc = TonProvider(service, service.api);
     _initWallets();
