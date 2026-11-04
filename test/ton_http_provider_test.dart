@@ -33,40 +33,41 @@ MockClient _recordingClient(List<http.Request> requests) =>
 
 TonHTTPProvider _provider({
   required http.Client client,
-  String? Function()? getAuthToken,
+  String? Function()? getAuthorization,
   String? tonApiKey,
 }) => TonHTTPProvider(
   tonApiUrl: _tonApiUrl,
   tonCenterUrl: _tonCenterUrl,
   client: client,
-  getAuthToken: getAuthToken,
+  getAuthorization: getAuthorization,
   tonApiKey: tonApiKey,
 );
 
 void main() {
-  group('auth token', () {
-    test('is read on every request, a new token is picked up', () async {
+  group('Authorization', () {
+    test('is read on every request, a new value is picked up', () async {
       final requests = <http.Request>[];
-      var token = 'first';
+      var authorization = 'Bearer first';
       var calls = 0;
       final provider = _provider(
         client: _recordingClient(requests),
-        getAuthToken: () {
+        getAuthorization: () {
           calls++;
-          return token;
+          return authorization;
         },
       );
 
       await provider.doRequest(_details());
-      token = 'second';
+      authorization = 'DPoP second';
       await provider.doRequest(_details());
 
       expect(calls, 2);
       expect(requests[0].headers['Authorization'], 'Bearer first');
-      expect(requests[1].headers['Authorization'], 'Bearer second');
+      // The scheme is not added: the header goes as is
+      expect(requests[1].headers['Authorization'], 'DPoP second');
     });
 
-    for (final (name, getAuthToken) in [
+    for (final (name, getAuthorization) in [
       ('no callback', null),
       ('callback returns null', () => null),
       ('callback returns an empty string', () => ''),
@@ -75,7 +76,7 @@ void main() {
         final requests = <http.Request>[];
         final provider = _provider(
           client: _recordingClient(requests),
-          getAuthToken: getAuthToken,
+          getAuthorization: getAuthorization,
         );
 
         await provider.doRequest(_details());

@@ -47,11 +47,13 @@ misplaced ignores then trip `unnecessary_ignore`.
   `TonProvider(service, service.api)`.
 - `TonHTTPProvider` is **mixed in** (`with TonServiceProvider`), non-generic
   `doRequest`, `encodeUrl` / `encodeBody`, named `statusCode` in `toResponse`.
-- **`TonHTTPProvider` never stores the auth token**: `getAuthToken` is called
-  on every request. The provider is long-lived (one http client, connections
-  reused); a token kept in the instance goes stale after re-login while the
-  consumer still holds the provider. Null or empty token - no `Authorization`
-  header. The provider does not close the http client it is given.
+- **`TonHTTPProvider` never stores the auth header**: `getAuthorization`
+  (the whole `Authorization` value with its scheme, `Bearer …` / `DPoP …`) is
+  called on every request and sent as is. The provider is long-lived (one http
+  client, connections reused); a value kept in the instance goes stale after
+  re-login while the consumer still holds the provider. Null or empty - no
+  `Authorization` header. The provider does not close the http client it is
+  given.
 
 ## Dependency stack
 
