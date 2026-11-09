@@ -1,3 +1,20 @@
+## 2.0.0
+
+* **Breaking:** `TonHTTPProvider` no longer stores the auth token. The
+  `authToken` parameter is replaced with the `getAuthorization` callback,
+  which is called on every request, so a long-lived provider always sends the
+  current value. It returns the whole `Authorization` header value with its
+  scheme (`Bearer …`, `DPoP …`), sent as is: the provider no longer adds
+  `Bearer`. Migration: `authToken: token` ->
+  `getAuthorization: () => 'Bearer $token'`, or better, pass a callback that
+  reads the value from its source.
+* `TonHTTPProvider` no longer sends `Authorization: Bearer ` for an empty
+  token: null and empty both mean no `Authorization` header, as in the other
+  wallet providers.
+* `TonHTTPProvider` is meant to be created once and shared; it never closes
+  the http client it is given.
+* Added tests for `TonHTTPProvider`.
+
 ## 1.2.0
 
 * Migrated to `ton_dart` 2.3.0 and `blockchain_utils` 7.1.0. Minimum
