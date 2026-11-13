@@ -13,8 +13,8 @@ class TonJettonWalletService {
     this.jettonMasterContractAddress,
     this.jettonAddress,
     this._jettonWallet,
-    TRLogger? logger,
-  ) : logger = logger ?? InAppLogger();
+    this.logger,
+  );
 
   /// TON wallet
   final TonWalletService tonWalletService;
@@ -31,9 +31,9 @@ class TonJettonWalletService {
   /// Jetton wallet
   JettonWallet? _jettonWallet;
 
-  /// Logger
+  /// Logger - null when the caller did not provide one (no logging)
   @protected
-  final TRLogger logger;
+  final TRLogger? logger;
 
   static const _name = 'TonJettonWalletService';
 
@@ -256,7 +256,7 @@ class TonJettonWalletService {
       // Cell ready
       return builder.asCell();
     } on Exception catch (e) {
-      logger.logError(_name, 'buildForwardCellWithMessage: $e');
+      logger?.logError(_name, 'buildForwardCellWithMessage: $e');
     }
     return null;
   }
