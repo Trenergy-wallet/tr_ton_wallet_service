@@ -22,9 +22,8 @@ class TonHTTPProvider with TonServiceProvider {
     String? tonApiKey,
     String? Function()? getAuthorization,
     this.defaultRequestTimeout = const Duration(seconds: 10),
-    TRLogger? logger,
+    this.logger,
   }) : client = client ?? http.Client(),
-       logger = logger ?? InAppLogger(),
        _tonApiKey = tonApiKey,
        _getAuthorization = getAuthorization;
 
@@ -41,9 +40,11 @@ class TonHTTPProvider with TonServiceProvider {
   /// Request timeout
   final Duration defaultRequestTimeout;
 
-  /// Logger
+  /// Logger of the requests and responses - null when the caller did not
+  /// provide one (no logging). An app that already logs the traffic of the
+  /// http client it passes needs no logger here
   @protected
-  final TRLogger logger;
+  final TRLogger? logger;
 
   final String? _tonApiKey;
 
@@ -77,9 +78,9 @@ class TonHTTPProvider with TonServiceProvider {
       final response = await client
           .post(uri, headers: headers, body: params.encodeBody())
           .timeout(timeout ?? defaultRequestTimeout);
-      logger.logInfoMessage(
+      logger?.logInfoMessage(
         _name,
-        'POST: request: ${response.request}, response: ${response.body}',
+        'POST $uri, response: ${response.body}',
       );
       return params.toResponse(
         response.bodyBytes,
@@ -89,9 +90,9 @@ class TonHTTPProvider with TonServiceProvider {
     final response = await client
         .get(uri, headers: headers)
         .timeout(timeout ?? defaultRequestTimeout);
-    logger.logInfoMessage(
+    logger?.logInfoMessage(
       _name,
-      'GET: request: ${response.request}, response: ${response.body}',
+      'GET $uri, response: ${response.body}',
     );
     return params.toResponse(
       response.bodyBytes,

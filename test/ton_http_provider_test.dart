@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:test/test.dart';
 import 'package:ton_dart/ton_dart.dart';
+import 'package:tr_logger/tr_logger.dart';
 import 'package:tr_ton_wallet_service/tr_ton_wallet_service.dart';
 
 const _tonApiUrl = 'https://tonapi.example';
@@ -35,15 +36,44 @@ TonHTTPProvider _provider({
   required http.Client client,
   String? Function()? getAuthorization,
   String? tonApiKey,
+  TRLogger? logger,
 }) => TonHTTPProvider(
   tonApiUrl: _tonApiUrl,
   tonCenterUrl: _tonCenterUrl,
   client: client,
   getAuthorization: getAuthorization,
   tonApiKey: tonApiKey,
+  logger: logger,
 );
 
 void main() {
+  group('logging', () {
+    setUp(InAppLogger().cleanLog);
+
+    for (final method in [RequestMethod.get, RequestMethod.post]) {
+      test('${method.name}: nothing is logged without a logger', () async {
+        await _provider(
+          client: _recordingClient([]),
+        ).doRequest(_details(method: method, body: '{}'));
+
+        expect(InAppLogger().getLog, isEmpty);
+      });
+
+      test('${method.name}: the request and the response go to the given '
+          'logger', () async {
+        await _provider(
+          client: _recordingClient([]),
+          logger: InAppLogger(),
+        ).doRequest(_details(method: method, body: '{}'));
+
+        final log = InAppLogger().getLog;
+        expect(log, contains('TonHTTPProvider'));
+        expect(log, contains('$_tonApiUrl/v2/test'));
+        expect(log, contains('{"ok":true}'));
+      });
+    }
+  });
+
   group('Authorization', () {
     test('is read on every request, a new value is picked up', () async {
       final requests = <http.Request>[];

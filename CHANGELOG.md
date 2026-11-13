@@ -1,3 +1,15 @@
+## 2.1.0
+
+* `TonHTTPProvider`, `TonWalletService` and `TonJettonWalletService` log only
+  when a `logger` is passed. They used to fall back to `InAppLogger`, so an
+  app that already logs the traffic of the http client it passes (e.g. through
+  its own interceptors) got every TON request in the log twice. Pass
+  `logger: InAppLogger()` to keep the old behavior. The `logger` field of
+  `TonHTTPProvider` and `TonJettonWalletService` is nullable now.
+* `TonHTTPProvider` logs the url of the request instead of
+  `response.request`, which is null with some http clients.
+* Added tests for logging.
+
 ## 2.0.0
 
 * **Breaking:** `TonHTTPProvider` no longer stores the auth token. The

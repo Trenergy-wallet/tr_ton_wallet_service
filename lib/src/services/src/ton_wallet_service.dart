@@ -48,8 +48,7 @@ class TonWalletService {
     return TonWalletService._(tonChain, wallet, rpc, logger);
   }
 
-  TonWalletService._(this.tonChain, this.tonWallet, this.rpc, TRLogger? logger)
-    : _logger = logger ?? InAppLogger();
+  TonWalletService._(this.tonChain, this.tonWallet, this.rpc, this._logger);
 
   /// Rpc for api access
   final TonProvider rpc;
@@ -62,7 +61,8 @@ class TonWalletService {
 
   static const _name = 'TonWalletService';
 
-  final TRLogger _logger;
+  /// Logger - null when the caller did not provide one (no logging)
+  final TRLogger? _logger;
 
   /// Get wallet balance
   Future<int> fetchTonBalance() async =>
@@ -112,10 +112,13 @@ class TonWalletService {
         //   return;
         // },
       );
-      _logger.logInfoMessage(_name, 'createTransfer: created transaction\n$tx');
+      _logger?.logInfoMessage(
+        _name,
+        'createTransfer: created transaction\n$tx',
+      );
       return tx;
     } catch (e) {
-      _logger.logError(_name, 'createTransfer: $e');
+      _logger?.logError(_name, 'createTransfer: $e');
       rethrow;
     }
   }
