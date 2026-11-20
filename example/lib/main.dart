@@ -7,7 +7,7 @@
 /// the suffix "excluded" refer to this import file.
 
 import 'package:blockchain_utils/blockchain_utils.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:ton_dart/ton_dart.dart';
 import 'package:tr_ton_wallet_service/tr_ton_wallet_service.dart';
 
